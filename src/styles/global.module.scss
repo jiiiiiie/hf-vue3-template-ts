@@ -1,0 +1,7 @@
+@import "./variables";
+
+// 导出变量
+:export {
+  namespace: $namespace;
+  elnamespace: $elNamespace;
+}

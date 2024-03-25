@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  body,
+  html {
+    @apply m-0 bg-[#F6F6F6] w-full h-full overflow-hidden text-[#333333];
+  }
+
+  #app {
+    @apply w-full h-full;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-size: revert !important;
+  }
+
+  * {
+    -webkit-tap-highlight-color: rgb(255 255 255 / 0%);
+  }
+
+  .bg-white {
+    background-color: #fff;
+  }
+
+  .text-white {
+    @apply text-[#ffffff];
+  }
+
+  .container-box {
+    height: calc(100% - 46px);
+    overflow-y: auto;
+  }
+
+  .ab-middle {
+    @apply absolute left-1/2 top-1/2;
+
+    transform: translate(-50%, -50%);
+  }
+}
+
+:root {
+  --base-text-color: #333;
+}

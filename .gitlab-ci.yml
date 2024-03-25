@@ -1,0 +1,117 @@
+stages: # 分段
+  - install
+  - build
+  - deploy
+
+cache: # 缓存
+  paths:
+    - node_modules
+    - dist
+    - pnpm-lock.yaml
+
+workflow: # 工作流程 当只有在MR请求时候 触发下面的pipeline 执行流程否则不执行 pipeline
+  rules:
+    - if: ($CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != "master") || $CI_COMMIT_REF_NAME == "test" || $CI_COMMIT_TAG
+      when: always
+    - when: never
+
+install-job:
+  tags:
+    - gitlabtest
+  stage: install
+  before_script:
+    - echo "安装依赖之前>>>>>>>"
+  script:
+    - pnpm install
+  after_script:
+    - echo "安装依赖之后 >>>>>>>>"
+
+build-job:
+  tags:
+    - gitlabtest
+  stage: build
+  before_script:
+    - echo "build之前>>>>>>>"
+  script:
+    - pnpm run build:test
+  after_script:
+    - echo "build之后 >>>>>>>>"
+
+deploy-test:
+  tags:
+    - gitlabtest
+  stage: deploy
+  only:
+    - test
+  before_script:
+    - echo "备份 test环境包 >>>>> "
+    # 先拷贝服务器上/home/test/下dist包到/home/backups/test文件夹,然后再删除/home/test/下的dist包
+    - sshpass -p $PASSWORD ssh $CUSTOM_USERNAME@$CUSTOM_IP -tt "cd /home/test/dist && zip -r dist.zip * && mv dist.zip /home/backups/test && rm -rf /home/test/dist"
+  script:
+    # 再将本地dist 复制 到 服务器/home/product位置下
+    - sshpass -p $PASSWORD scp -r ./dist $CUSTOM_USERNAME@$CUSTOM_IP:/home/test
+    - echo "发布 test环境完成 >>>>> "
+
+deploy-production:
+  tags:
+    - gitlabtest
+  stage: deploy
+  only:
+    - tags
+  when: manual
+  before_script:
+    - echo "备份 production 环境包 >>>>>>>"
+    - sshpass -p $PASSWORD ssh $CUSTOM_USERNAME@$CUSTOM_IP -tt "cd /home/product/dist && zip -r dist.zip * && mv dist.zip /home/backups/product && rm -rf /home/product/dist"
+  script:
+    # 再将本地dist 复制 到 服务器/home/product位置下
+    - sshpass -p $PASSWORD scp -r ./dist $CUSTOM_USERNAME@$CUSTOM_IP:/home/product
+    - echo "production 发布完成 >>>>>>>"
+
+
+#stages: # 分段
+#  - install
+#  - build
+#  - deploy
+#
+#workflow: # 工作流程 当只有在MR请求时候 触发下面的pipeline 执行流程否则不执行 pipeline
+#  rules:
+#    - if: $CI_PIPELINE_SOURCE == "merge_request_event" || $CI_COMMIT_REF_NAME == "test" || $CI_COMMIT_TAG
+#      when: always
+#    - when: never
+#
+#install-job:
+#  tags:
+#    - macRunner
+#  stage: install
+#  before_script:
+#    - echo "安装依赖之前>>>>>>>"
+#  script:
+#    - echo "安装中 》》》》"
+#  after_script:
+#    - echo "安装依赖之后 >>>>>>>>"
+#
+#build-job:
+#  tags:
+#    - macRunner
+#  stage: build
+#  script:
+#    - echo "开始build了 >>> "
+#
+#deploy-test:
+#  tags:
+#    - macRunner
+#  only:
+#    - test
+#  stage: deploy
+#  script:
+#    - echo '我来部署test环境了>>>>>>>>！！'
+#
+#deploy-master:
+#  tags:
+#    - macRunner
+#  only:
+#    - /^master-(.*)$/
+#  when: manual
+#  stage: deploy
+#  script:
+#    - echo '我来部署master环境了>>>>>>>>！！'

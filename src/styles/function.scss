@@ -1,0 +1,22 @@
+@function vh($height) {
+  $body-height: 1080;
+
+  @return calc($height / $body-height * 100) + vh;
+}
+
+@function vw($width) {
+  $body-width: 1920;
+
+  @return calc($width / $body-width * 100) + vw;
+}
+
+@mixin gradient-text($size) {
+  font-size: $size + px;
+  color: blue;
+
+  @supports (-webkit-background-clip: text) or (background-clip: text) {
+    color: transparent;
+    background: linear-gradient(to right, #0072ff, #00eaff, #01a9ff);
+    background-clip: text;
+  }
+}

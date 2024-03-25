@@ -1,0 +1,12 @@
+vite.config.ts
+*.cjs
+dist
+node_modules
+yarn.lock
+pnpm-lock.yaml
+package.json
+.DS_Store
+coverage
+.stylelintcache
+.idea
+stats.html

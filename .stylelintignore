@@ -1,0 +1,13 @@
+/dist/*
+/public/*
+
+.husky
+.history
+dist
+node_modules
+.stylelintcache
+.DS_Store
+coverage
+.idea
+stats.html
+

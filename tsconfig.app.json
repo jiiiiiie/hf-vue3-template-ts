@@ -1,0 +1,26 @@
+{
+  "extends": "@vue/tsconfig/tsconfig.dom.json",
+  "include": [
+		"types/*.d.ts",
+		"src/**/*",
+		"src/**/*.vue",
+		"src/**/*.ts",
+		"src/types/*.d.ts",
+		"src/**/*.tsx",
+		"src/**/*.json",
+		"components.d.ts"
+	],
+  "exclude": ["src/**/__tests__/*","dist", "node_modules"],
+  "compilerOptions": {
+    "composite": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+	"types": [
+		"src/types",
+		"vite/client",
+		"element-plus/global"
+	]
+}
